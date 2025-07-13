@@ -1,0 +1,32 @@
+# AI-Powered Multi-Scraper Dashboard Dependencies
+# Core web scraping and data processing
+apify-client
+
+# Web application framework
+streamlit
+
+# Data manipulation and analysis
+pandas
+
+# Interactive data visualization
+plotly
+
+# AI and natural language processing
+google-generativeai
+
+# Environment variable management
+python-dotenv
+
+# Additional useful packages for data processing
+numpy
+requests
+
+# Optional: For enhanced data export capabilities
+openpyxl
+xlsxwriter
+
+# Optional: For better JSON handling
+ujson
+
+# Optional: For progress bars and better UX
+tqdm 
