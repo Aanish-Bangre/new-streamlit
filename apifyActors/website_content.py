@@ -1,3 +1,6 @@
+import os
+from dotenv import load_dotenv
+load_dotenv()
 from apify_client import ApifyClient
 from datetime import datetime
 
@@ -5,12 +8,14 @@ def scrape_website_content(
     start_urls=None,
     results_limit=20,
     save_markdown=True,
-    api_token="apify_api_u1bFd9lPhepZD1TERjMIMVNgj3ysMD12mcVn"
+    api_token=None
 ):
     """
     Scrape website content and return formatted data.
     Returns: dict with 'success', 'pages', 'summary', 'raw_results' or 'error'.
     """
+    if api_token is None:
+        api_token = os.environ.get("APIFY_API_TOKEN")
     try:
         client = ApifyClient(api_token)
         run_input = {

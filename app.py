@@ -15,6 +15,10 @@ except ImportError:
     genai = None
 import re
 from datetime import datetime
+import os
+from dotenv import load_dotenv
+
+load_dotenv()
 
 # Configure Gemini
 def configure_gemini(api_key):
@@ -279,30 +283,17 @@ with tab1:
         - Filter and sort results in the manual dashboard
         """)
     
-    # Sidebar for API keys
-    with st.sidebar:
-        st.header("🔑 API Configuration")
-        apify_token = st.text_input(
-            "Apify API Token",
-            value="apify_api_u1bFd9lPhepZD1TERjMIMVNgj3ysMD12mcVn",
-            type="password",
-            help="Enter your Apify API token",
-            key="chatbot_apify_token"
-        )
-        
-        gemini_api_key = st.text_input(
-            "Gemini API Key",
-            type="password",
-            help="Enter your Gemini API key",
-            key="chatbot_gemini_token"
-        )
-        
-        if gemini_api_key and st.button("🔧 Initialize Gemini"):
-            try:
-                st.session_state.gemini_model = configure_gemini(gemini_api_key)
-                st.success("✅ Gemini initialized successfully!")
-            except Exception as e:
-                st.error(f"❌ Error initializing Gemini: {str(e)}")
+    # Fetch API keys from environment
+    apify_token = os.environ.get("APIFY_API_TOKEN", "")
+    gemini_api_key = os.environ.get("GEMINI_API_KEY", "")
+
+    # Instead, initialize Gemini automatically if gemini_api_key is present
+    if gemini_api_key and not st.session_state.gemini_model:
+        try:
+            st.session_state.gemini_model = configure_gemini(gemini_api_key)
+            st.success("✅ Gemini initialized successfully!")
+        except Exception as e:
+            st.error(f"❌ Error initializing Gemini: {str(e)}")
     
     # Chat interface
     st.markdown("---")
@@ -474,13 +465,8 @@ with tab2:
             "Instagram Hashtag", "Instagram Profile", "Booking.com", "Twitter", "Website Content", "Google Maps"
         ])
 
-        api_token = st.text_input(
-            "Apify API Token",
-            value="apify_api_u1bFd9lPhepZD1TERjMIMVNgj3ysMD12mcVn",
-            type="password",
-            help="Enter your Apify API token",
-            key="manual_apify_token"
-        )
+        # Fetch API keys from environment
+        apify_token = os.environ.get("APIFY_API_TOKEN", "")
 
         if data_source == "Instagram Hashtag":
             hashtags_input = st.text_input(
@@ -585,7 +571,7 @@ with tab2:
             scrape_button = st.button("🚀 Run Google Maps Scraper", key="gmaps_btn", use_container_width=True)
 
     if scrape_button:
-        if not api_token:
+        if not apify_token:
             st.error("❌ Please enter your Apify API token!")
         else:
             if data_source == "Instagram Hashtag":
@@ -594,7 +580,7 @@ with tab2:
                 else:
                     hashtags = [tag.strip() for tag in hashtags_input.split(",") if tag.strip()]
                     with st.spinner("🔄 Running Instagram Hashtag scraper..."):
-                        results = scrape_instagram_posts(api_token, hashtags, results_limit)
+                        results = scrape_instagram_posts(apify_token, hashtags, results_limit)
                         if results.get("success"):
                             st.success(f"✅ Successfully scraped {results['summary']['total_posts']} posts!")
                             st.header("📊 Summary Statistics")
@@ -678,7 +664,7 @@ with tab2:
                     st.error("❌ Please enter at least one Instagram profile URL!")
                 else:
                     with st.spinner("🔄 Running Instagram Profile scraper..."):
-                        results = scrape_instagram_profile(profile_urls, results_limit, api_token)
+                        results = scrape_instagram_profile(profile_urls, results_limit, apify_token)
                         if results.get("success"):
                             st.success(f"✅ Successfully scraped {results['summary']['total_posts']} posts!")
                             st.header("📊 Summary Statistics")
@@ -766,7 +752,7 @@ with tab2:
                         adults=adults,
                         children=children,
                         min_max_price=min_max_price,
-                        api_token=api_token
+                        api_token=apify_token
                     )
                     if results.get("success"):
                         st.success(f"✅ Successfully scraped {results['summary']['total_hotels']} hotels!")
@@ -815,7 +801,7 @@ with tab2:
                         search_terms=search_terms,
                         twitter_handles=twitter_handles,
                         max_items=max_items,
-                        api_token=api_token
+                        api_token=apify_token
                     )
                     if results.get("success"):
                         st.success(f"✅ Successfully scraped {results['summary']['total_tweets']} tweets!")
@@ -866,7 +852,7 @@ with tab2:
                         start_urls=website_urls,
                         results_limit=results_limit,
                         save_markdown=save_markdown,
-                        api_token=api_token
+                        api_token=apify_token
                     )
                     if results.get("success"):
                         st.success(f"✅ Successfully scraped {results['summary']['total_pages']} pages!")
@@ -911,7 +897,7 @@ with tab2:
                         search_strings=gmaps_search_list,
                         location_query=gmaps_location,
                         max_places=gmaps_max_places,
-                        api_token=api_token
+                        api_token=apify_token
                     )
                     if results.get("success"):
                         st.success(f"✅ Successfully scraped {results['summary']['total_places']} places!")

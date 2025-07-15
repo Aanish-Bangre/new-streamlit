@@ -1,8 +1,11 @@
 from apify_client import ApifyClient
 import json
 from datetime import datetime
+import os
+from dotenv import load_dotenv
+load_dotenv()
 
-def scrape_instagram_posts(api_token, hashtags, results_limit=20):
+def scrape_instagram_posts(api_token=None, hashtags=None, results_limit=20):
     """
     Scrape Instagram posts for given hashtags and return formatted data
     
@@ -14,6 +17,10 @@ def scrape_instagram_posts(api_token, hashtags, results_limit=20):
     Returns:
         dict: Formatted data with posts and summary
     """
+    if api_token is None:
+        api_token = os.environ.get("APIFY_API_TOKEN")
+    if hashtags is None:
+        hashtags = []
     try:
         # Initialize client
         client = ApifyClient(api_token)
@@ -106,8 +113,7 @@ def scrape_instagram_posts(api_token, hashtags, results_limit=20):
 
 # For testing the module directly
 if __name__ == "__main__":
-    # Test the scraper
-    api_token = "apify_api_u1bFd9lPhepZD1TERjMIMVNgj3ysMD12mcVn"
+    api_token = os.environ.get("APIFY_API_TOKEN")
     hashtags = ["Goa"]
     results = scrape_instagram_posts(api_token, hashtags, 5)
     

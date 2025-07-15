@@ -1,11 +1,16 @@
+import os
+from dotenv import load_dotenv
+load_dotenv()
 from apify_client import ApifyClient
 from datetime import datetime
 
-def scrape_booking(search="New York", max_items=10, property_type="none", sort_by="distance_from_search", stars_count_filter="any", currency="USD", language="en-gb", rooms=1, adults=2, children=0, min_max_price="0-999999", api_token="apify_api_u1bFd9lPhepZD1TERjMIMVNgj3ysMD12mcVn"):
+def scrape_booking(search="New York", max_items=10, property_type="none", sort_by="distance_from_search", stars_count_filter="any", currency="USD", language="en-gb", rooms=1, adults=2, children=0, min_max_price="0-999999", api_token=None):
     """
     Scrape Booking.com for hotels and return formatted data.
     Returns: dict with 'success', 'hotels', 'summary', 'raw_results' or 'error'.
     """
+    if api_token is None:
+        api_token = os.environ.get("APIFY_API_TOKEN")
     try:
         client = ApifyClient(api_token)
         run_input = {

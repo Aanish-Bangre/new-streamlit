@@ -1,3 +1,6 @@
+import os
+from dotenv import load_dotenv
+load_dotenv()
 from apify_client import ApifyClient
 from datetime import datetime
 
@@ -6,8 +9,10 @@ def scrape_google_maps(
     location_query="New York, USA",
     max_places=50,
     language="en",
-    api_token="apify_api_u1bFd9lPhepZD1TERjMIMVNgj3ysMD12mcVn"
+    api_token=None
 ):
+    if api_token is None:
+        api_token = os.environ.get("APIFY_API_TOKEN")
     """
     Scrape Google Maps places and return formatted data.
     Returns: dict with 'success', 'places', 'summary', 'raw_results' or 'error'.
